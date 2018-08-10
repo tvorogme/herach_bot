@@ -53,7 +53,7 @@ class Bounty:
         markup.add(KeyboardButton("Назад"))
 
         self.bot.send_message(message.chat.id,
-                              "И сколько ты получишь (💰) когда выполнишь его?)".format(
+                              "💰 И сколько ты получишь когда выполнишь его?\nСложность от 0 до 10. 🏇".format(
                                   self.user.score),
                               parse_mode="Markdown", reply_markup=markup)
         self.bot.register_next_step_handler(message, self.add_task_bounty_handler)

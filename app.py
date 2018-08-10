@@ -10,6 +10,7 @@ from models.types import *
 import os
 from modules.bounty import Bounty
 import atexit
+from modules.taskEdit import TaskEditMenu
 
 bot = telebot.TeleBot("631678522:AAFC8T_f7C_WsXfnK4-jkKeKF2JwuJX4ADM")
 
@@ -48,18 +49,34 @@ def main_menu(message: Message) -> None:
     markup = ReplyKeyboardMarkup(row_width=2)
     markup.add(KeyboardButton(first_button))
     markup.add(KeyboardButton(second_button))
-    markup.row(KeyboardButton(third_button), KeyboardButton(fourth_button))
+    # markup.add(KeyboardButton(third_button))
+    markup.add(KeyboardButton(fourth_button))
+
+    tasks = ""
+
+    if len(user.tasks) > 0:
+        tasks = "\n\n🔥 *Bounty rating:*\n"
+
+        for task in user.tasks[:3]:
+            tasks += "\n📌 {}, {}💲".format(task, task.score)
+
+        tasks += "\n"
 
     bot.send_message(message.chat.id,
-                     "✌ Хорошего дня!\n😉 Твой счёт *{}Ť*.\nДобавляй и заканчивай таски чтобы получить больше.".format(
-                         user.score),
+                     "✌ Хорошего дня!\n\n😉 Твой счёт *{}Ť*. {} "
+                     "\nДобавляй и заканчивай таски чтобы получить больше.".format(
+                         user.score, tasks),
                      parse_mode="Markdown", reply_markup=markup)
 
     def main_menu_button(message: Message) -> None:
         logger.info("{} by {}".format(message.text, message.chat.id))
 
         if message.text == first_button:
-            pass
+            if len(user.tasks) > 0:
+                task_edit_menu = TaskEditMenu(bot, user, main_menu, 'done')
+                task_edit_menu.start_choice(message)
+            else:
+                main_menu(message)
 
         elif message.text == second_button:
             bounty_menu = Bounty(user, bot, main_menu)
@@ -67,6 +84,13 @@ def main_menu(message: Message) -> None:
 
         elif message.text == third_button:
             pass
+
+        elif message.text == fourth_button:
+            if len(user.tasks) > 0:
+                task_edit_menu = TaskEditMenu(bot, user, main_menu, 'delete')
+                task_edit_menu.start_choice(message)
+            else:
+                main_menu(message)
 
     bot.register_next_step_handler(message, main_menu_button)
 

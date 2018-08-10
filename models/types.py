@@ -17,9 +17,9 @@ class User:
 
     def add_task(self, task: Task) -> int:
         self.tasks.append(task)
-        self.tasks = list(sorted(self.tasks, key=lambda task: task.score))
+        self.tasks = list(sorted(self.tasks, key=lambda task: -1 * task.score))
         return self.tasks.index(task)
 
-    def end_task(self, task_index: int) -> None:
-        ended_task = self.tasks.pop(task_index)
-        self.score += ended_task.score
+    def end_task(self, task: Task) -> None:
+        self.tasks.remove(task)
+        self.score += task.score
