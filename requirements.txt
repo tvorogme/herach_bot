@@ -1,0 +1,3 @@
+https://github.com/eternnoir/pyTelegramBotAPI
+PySocks
+dill
